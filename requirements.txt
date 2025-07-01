@@ -1,0 +1,7 @@
+Flask
+psycopg2-binary
+Flask-SQLAlchemy
+flask-cors
+pyotp
+qrcode[pil]
+requests

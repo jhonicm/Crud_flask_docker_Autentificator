@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Login con TOTP</title>
+  <style>
+    body { background: #f2f2f2; font-family: Arial, sans-serif; }
+    .login-container {
+      background: #fff;
+      width: 400px;
+      margin: 80px auto;
+      padding: 30px 40px;
+      border-radius: 10px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.13);
+    }
+    h2 { text-align: center; color: #333; margin-bottom: 25px; }
+    label { display: block; margin-bottom: 8px; color: #555; }
+    input[type="email"], input[type="password"], input[type="text"] {
+      width: 100%;
+      padding: 10px 8px;
+      margin-bottom: 18px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 15px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #1976d2;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button:hover { background: #125ea8; }
+    #msg { margin-top: 15px; text-align: center; font-size: 15px; }
+    .qr-section { display: none; text-align: center; }
+    .qr-section img { margin: 10px 0; border-radius: 8px; background: #fafafa; padding: 8px; }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h2>Iniciar sesión</h2>
+    <div id="msg">{msg}</div>
+    <form id="login-form" autocomplete="off">
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required>
+      <label for="password">Contraseña:</label>
+      <input type="password" id="password" name="password" required>
+      <button type="submit">Entrar</button>
+    </form>
+    <div class="qr-section" id="qr-section">
+      <h3>Verificación en dos pasos</h3>
+      <div id="qr-content"></div>
+      <form id="totp-form" autocomplete="off">
+        <input type="text" name="token" placeholder="Código de autenticación" required>
+        <button type="submit">Verificar</button>
+      </form>
+    </div>
+  </div>
+  <script>
+    let username = "";
+    let secret = "";
+    const loginForm = document.getElementById('login-form');
+    const qrSection = document.getElementById('qr-section');
+    const qrContent = document.getElementById('qr-content');
+    const totpForm = document.getElementById('totp-form');
+    const msgDiv = document.getElementById('msg');
+
+    loginForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      msgDiv.innerHTML = "";
+      const formData = new FormData(loginForm);
+      fetch("/", {
+        method: "POST",
+        body: new URLSearchParams({
+          fase: "login",
+          email: formData.get("email"),
+          password: formData.get("password")
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.qr && data.secret && data.username) {
+          username = data.username;
+          secret = data.secret;
+          qrContent.innerHTML = `
+            <img src="data:image/png;base64,${data.qr}" width="180"><br>
+            <small>Clave secreta: <b>${data.secret}</b></small>
+          `;
+          loginForm.style.display = "none";
+          qrSection.style.display = "block";
+        } else if (data.error) {
+          msgDiv.innerHTML = `<div style="color:#d32f2f">${data.error}</div>`;
+        }
+      })
+      .catch(() => {
+        msgDiv.innerHTML = `<div style="color:#d32f2f">Error de conexión.</div>`;
+      });
+    });
+
+    totpForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      msgDiv.innerHTML = "";
+      const token = totpForm.token.value;
+      fetch("/", {
+        method: "POST",
+        body: new URLSearchParams({
+          fase: "verify",
+          username: username,
+          token: token
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          msgDiv.innerHTML = `<div style="color:#388e3c">${data.success}</div>`;
+          setTimeout(() => { window.location.reload(); }, 1200);
+        } else if (data.error) {
+          msgDiv.innerHTML = `<div style="color:#d32f2f">${data.error}</div>`;
+        }
+      })
+      .catch(() => {
+        msgDiv.innerHTML = `<div style="color:#d32f2f">Error de conexión.</div>`;
+      });
+    });
+  </script>
+</body>
+</html>

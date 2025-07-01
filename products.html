@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Panel de Productos</title>
+  <style>
+    body { background: #f2f2f2; font-family: 'Segoe UI', Arial, sans-serif; }
+    .container {
+      background: #fff;
+      width: 95%;
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 30px;
+      border-radius: 14px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.13);
+      position: relative;
+    }
+    .logout-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: #e53935;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      padding: 8px 18px;
+      font-size: 15px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .logout-btn:hover { background: #b71c1c; }
+    h3 { color: #1976d2; margin-top: 30px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: #fafafa;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #e0e0e0;
+      text-align: left;
+    }
+    th { background: #1976d2; color: #fff; }
+    tr:last-child td { border-bottom: none; }
+    .crud-btn, .edit-btn, .delete-btn, .edit-user-btn, .delete-user-btn {
+      padding: 7px 15px;
+      border: none;
+      border-radius: 4px;
+      margin-right: 5px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .crud-btn, .edit-btn, .edit-user-btn { background: #1976d2; color: #fff; }
+    .crud-btn:hover, .edit-btn:hover, .edit-user-btn:hover { background: #125ea8; }
+    .delete-btn, .delete-user-btn { background: #e53935; color: #fff; }
+    .delete-btn:hover, .delete-user-btn:hover { background: #b71c1c; }
+    form { margin-top: 18px; }
+    form input, form textarea {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 12px;
+      border: 1px solid #bdbdbd;
+      border-radius: 5px;
+      font-size: 15px;
+      background: #f9f9f9;
+      transition: border 0.2s;
+    }
+    form input:focus, form textarea:focus { border: 1.5px solid #1976d2; outline: none; }
+    form button[type="submit"] {
+      background: #388e3c;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      padding: 9px 18px;
+      font-size: 15px;
+      cursor: pointer;
+      margin-right: 8px;
+      transition: background 0.2s;
+    }
+    form button[type="submit"]:hover { background: #256029; }
+    form button[type="button"] {
+      background: #757575;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      padding: 9px 18px;
+      font-size: 15px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    form button[type="button"]:hover { background: #424242; }
+    .msg {
+      font-size: 16px;
+      text-align: center;
+      margin-top: 10px;
+    }
+    .msg-success { color: #388e3c; }
+    .msg-error { color: #e53935; }
+    /* Estilos para botones de añadir usuario y producto */
+    .add-button {
+      padding: 10px 20px;
+      background: #1976d2;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin: 5px;
+    }
+    .add-button:hover {
+      background: #125ea8;
+    }
+    
+    @media (max-width: 700px) {
+      .container { padding: 10px; }
+      table, th, td { font-size: 13px; }
+      .logout-btn { top: 10px; right: 10px; padding: 6px 12px; font-size: 13px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <button class="logout-btn" onclick="logout()">Cerrar sesión</button>
+    {msg}
+  </div>
+  <script>
+    function logout() {
+      document.cookie = "role=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      window.location.href = "/login";
+    }
+  </script>
+</body>
+</html>

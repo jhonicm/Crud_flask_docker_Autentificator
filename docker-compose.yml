@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: mydatabase
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  products_db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: productuser
+      POSTGRES_PASSWORD: productpass
+      POSTGRES_DB: productsdb
+    ports:
+      - "5433:5432"
+    volumes:
+      - products_data:/var/lib/postgresql/data
+
+  users_service:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      DATABASE_URL: postgresql://myuser:mypassword@db:5432/mydatabase
+      SERVICE_TYPE: users
+      APP_FILE: app.py
+    depends_on:
+      - db
+
+  products_service:
+    build: .
+    ports:
+      - "5001:5000"
+    environment:
+      PRODUCTS_DATABASE_URL: postgresql://productuser:productpass@products_db:5432/productsdb
+      SERVICE_TYPE: products
+      APP_FILE: app2.py
+    depends_on:
+      - products_db
+  google_auth_service:
+    build: .
+    ports:
+      - "5003:5003"
+    environment:
+      APP_FILE: google_auth_service.py
+      SECRET_KEY: "TU_SECRETO"
+      
+volumes:
+  postgres_data:
+  products_data:
